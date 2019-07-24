@@ -118,3 +118,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+def always_show(request):
+    return True
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    'SHOW_TOOLBAR_CALLBACK': always_show,
+}
+
+INSTALLED_APPS += [
+    'debug_toolbar',
+]
+
+MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+
+if os.environ.get('NOTEBOOK',''):
+    INSTALLED_APPS += [
+        'django_extensions',
+    ]
+
+    NOTEBOOK_ARGUMENTS = [
+        '--ip', '0.0.0.0',
+        '--port', '8888',
+        '--allow-root',
+        '--no-browser',
+        '--notebook-dir', 'notebooks',
+    ]

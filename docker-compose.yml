@@ -1,0 +1,141 @@
+version: '3.6'
+
+x-logging:
+  &default-logging
+  driver: syslog
+  options:
+    syslog-facility: daemon
+
+services:
+  #redis
+  redis:
+    image: redis:5-alpine
+    restart: always
+    logging:
+      << : *default-logging
+      options:
+        tag: twin-redis
+    ports:
+      - 8051:6379
+    networks:
+      - twin_network
+
+  #nginx
+  nginx:
+    image: twin/nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    restart: always
+    volumes:
+      - .:/opt/app
+    depends_on:
+      - app
+    logging:
+      << : *default-logging
+      options:
+        tag: twin-nginx
+    ports:
+      - 8050:80
+    networks:
+      - twin_network
+
+  #django app
+  app:
+    image: twin/app
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    volumes:
+      - .:/opt/app
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+    working_dir: /opt/app
+    logging:
+      << : *default-logging
+      options:
+        tag: twin-app
+    environment:
+      - PYTHONPATH=/opt/app
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=twin.settings
+    command: |
+      gunicorn
+      --config file:docker/app/gunicorn_conf.py
+      twin.wsgi:application
+    ports:
+      - 8052:3000
+      - 8053:8080
+    networks:
+      - twin_network
+
+  #adminer
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8054:8080
+    networks:
+      - twin_network
+
+  #jupyter notebook
+  notebook:
+    image: twin/app
+    volumes:
+      - .:/opt/app
+    depends_on:
+      - app
+    restart: always
+    working_dir: /opt/app
+    logging:
+      << : *default-logging
+      options:
+        tag: twin-notebook
+    environment:
+      - PYTHONPATH=/opt/app
+      - DEBUG=1
+      - NOTEBOOK=1
+      - DJANGO_SETTINGS_MODULE=twin.settings
+    env_file:
+      - .env
+    command: |
+      python manage.py
+      shell_plus --notebook
+    ports:
+      - 8055:8888
+    networks:
+      - twin_network
+
+  postgres:
+    image: twin/postgres
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    volumes:
+      - postgres-twin-data:/var/lib/postgresql/data
+      - .:/opt/app
+    restart: always
+    env_file:
+      - .env
+    logging:
+      << : *default-logging
+      options:
+        tag: twin-postgres
+    ports:
+      - 8056:5432
+    networks:
+      - twin_network
+
+volumes:
+  postgres-twin-data:
+    external: true
+
+networks:
+  twin_network:
+    name: twin_network
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.31.6.0/24"
