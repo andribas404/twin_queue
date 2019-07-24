@@ -1,0 +1,17 @@
+amqp==2.5.0
+billiard==3.6.0.0
+celery==4.3.0
+certifi==2019.6.16
+Django==2.2.3
+djangorestframework==3.10.1
+entrypoints==0.3
+flake8==3.7.8
+kombu==4.6.3
+mccabe==0.6.1
+psycopg2==2.8.3
+pycodestyle==2.5.0
+pyflakes==2.1.1
+pytz==2019.1
+redis==3.2.1
+sqlparse==0.3.0
+vine==1.3.0
