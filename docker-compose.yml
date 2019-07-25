@@ -130,6 +130,33 @@ services:
     networks:
       - twin_network
 
+  #celery
+  celery:
+    image: twin/app
+    volumes:
+      - .:/opt/app
+    depends_on:
+      - app
+    restart: always
+    working_dir: /opt/app
+    logging:
+      << : *default-logging
+      options:
+        tag: twin-celery
+    environment:
+      - PYTHONPATH=/opt/app
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=twin.settings
+    env_file:
+      - .env
+    command: |
+      celery -A twin worker
+      --concurrency 2
+      --loglevel INFO
+    networks:
+      - twin_network
+
+
 volumes:
   postgres-twin-data:
     external: true

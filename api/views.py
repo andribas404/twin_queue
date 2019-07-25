@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from .models import Task
 from .serializers import TaskSerializer
+from .tasks import task_run
 
 
 class TaskViewSet(viewsets.ReadOnlyModelViewSet):
@@ -23,6 +24,7 @@ class TaskViewSet(viewsets.ReadOnlyModelViewSet):
         """
         task = Task()
         task.save()
+        task_run.delay(task.pk)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
 
