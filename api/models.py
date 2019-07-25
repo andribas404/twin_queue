@@ -22,7 +22,7 @@ class Task(models.Model):
         'Статус задачи',
         max_length=100,
         choices=STATUS_CHOICES,
-        default='In Queue',
+        default=INQUEUE,
     )
     create_time = models.DateTimeField(
         'Время создания задачи',
