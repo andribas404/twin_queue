@@ -5,10 +5,14 @@ class Task(models.Model):
     """
     Задача
     """
+    INQUEUE = 'In Queue'
+    RUN = 'Run'
+    COMPLETED = 'Completed'
+
     STATUS_CHOICES = [
-        ('In Queue', 'Задача ждёт своей очереди на выполнение'),
-        ('Run', 'Произошел запуск задачи'),
-        ('Completed', 'Задача выполнена'),
+        (INQUEUE, 'Задача ждёт своей очереди на выполнение'),
+        (RUN, 'Произошел запуск задачи'),
+        (COMPLETED, 'Задача выполнена'),
     ]
     id = models.AutoField(
         'Номер поставленной задачи',
