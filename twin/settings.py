@@ -22,6 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'mdikpzxs%vqtg($cy@zom2+wdqr3i@fus&63tkc^0uppg8&p$0'
 
+POSTGRES_TWIN_PASSWORD = os.environ.get('POSTGRES_TWIN_PASSWORD', '')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -37,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -75,9 +79,12 @@ WSGI_APPLICATION = 'twin.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'twin',
+        'USER': 'twin',
+        'PASSWORD': POSTGRES_TWIN_PASSWORD,
+        'HOST': 'postgres',
+    },
 }
 
 
@@ -118,6 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 def always_show(request):

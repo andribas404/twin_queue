@@ -61,6 +61,8 @@ services:
       - PYTHONPATH=/opt/app
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=twin.settings
+    env_file:
+      - .env
     command: |
       gunicorn
       --config file:docker/app/gunicorn_conf.py
