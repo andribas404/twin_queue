@@ -2,7 +2,6 @@ import os
 import subprocess
 import requests
 
-from celery import chain
 from celery import shared_task
 
 from django.conf import settings
