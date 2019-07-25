@@ -27,7 +27,7 @@ POSTGRES_TWIN_PASSWORD = os.environ.get('POSTGRES_TWIN_PASSWORD', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'nginx']
 
 
 # Application definition
@@ -143,7 +143,7 @@ INSTALLED_APPS += [
 
 MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 
-if os.environ.get('NOTEBOOK',''):
+if os.environ.get('NOTEBOOK', ''):
     INSTALLED_APPS += [
         'django_extensions',
     ]
@@ -155,3 +155,9 @@ if os.environ.get('NOTEBOOK',''):
         '--no-browser',
         '--notebook-dir', 'notebooks',
     ]
+
+# Celery settings
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
